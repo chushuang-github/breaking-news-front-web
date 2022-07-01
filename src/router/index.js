@@ -4,12 +4,13 @@ import store from '../store'
 
 Vue.use(VueRouter)
 
+// 路由配置：只有以及路由path需要加'/'，二级、三级...之后的路由中path都不用加'/'的
 const routes = [
   {
     path: '/',
+    redirect: '/home',
     component: () => import('../views/layout'),
     children: [
-      { path: '', redirect: 'home' },
       { path: 'home', component: () => import('../views/home') }
     ]
   },

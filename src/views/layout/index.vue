@@ -71,6 +71,7 @@
       <el-container>
         <!-- 页面主体区域 -->
         <el-main>
+          <!-- 二级路由挂载点 -->
           <router-view></router-view>
         </el-main>
         <!-- 底部 footer 区域 -->
@@ -163,7 +164,6 @@ export default {
   align-items: center;
   border-top: 1px solid #000;
   border-bottom: 1px solid #000;
-  user-select: none;
   img {
     width: 35px;
     height: 35px;
@@ -182,7 +182,6 @@ export default {
   .el-submenu,
   .el-menu-item {
     width: 200px;
-    user-select: none;
   }
 }
 </style>
