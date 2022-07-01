@@ -1,8 +1,26 @@
 import request from '@/utils/request'
 
-export const getListAPI = () => {
-  // 这里先用这个接口测试下, 如果url以http开头会忽略baseURL, axios直接请求此地址
+// 注册
+export const registerAPI = ({ username, password, repassword }) => {
   return request({
-    url: 'http://geek.itheima.net/v1_0/channels'
+    url: '/api/reg',
+    method: 'post',
+    data: {
+      username,
+      password,
+      repassword
+    }
+  })
+}
+
+// 登录
+export const loginAPI = ({ username, password }) => {
+  return request({
+    url: '/api/login',
+    method: 'post',
+    data: {
+      username,
+      password
+    }
   })
 }
