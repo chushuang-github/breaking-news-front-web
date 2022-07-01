@@ -24,3 +24,17 @@ export const loginAPI = ({ username, password }) => {
     }
   })
 }
+
+// 获取用户信息
+export const getUserInfoAPI = () => {
+  return request({
+    url: '/my/userinfo'
+  })
+}
+
+// 侧边栏导航数据
+export const getMenusAPI = () => {
+  return request({
+    url: '/my/menus'
+  })
+}
