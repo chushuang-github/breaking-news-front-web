@@ -38,3 +38,18 @@ export const getMenusAPI = () => {
     url: '/my/menus'
   })
 }
+
+// 基本资料 - 提交修改
+export const updateUserInfoAPI = ({ id, username, nickname, email, user_pic }) => {
+  return request({
+    url: '/my/userinfo',
+    method: 'put',
+    data: {
+      id,
+      username,
+      nickname,
+      email,
+      user_pic
+    }
+  })
+}

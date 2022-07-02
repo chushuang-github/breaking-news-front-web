@@ -11,6 +11,7 @@
         background-color="#23262E"
         text-color="#fff"
         active-text-color="#409EFF"
+        router
       >
         <el-submenu index="1">
           <template slot="title">
@@ -18,13 +19,13 @@
             <img src="../../assets/images/logo.png" alt="" class="avatar" />
             <span>个人中心</span>
           </template>
-          <el-menu-item index="1-1">
+          <el-menu-item index="/user-info">
             <i class="el-icon-s-operation"></i>基本资料
           </el-menu-item>
-          <el-menu-item index="1-2">
+          <el-menu-item index="/user-avatar">
             <i class="el-icon-camera"></i>更换头像
           </el-menu-item>
-          <el-menu-item index="1-3">
+          <el-menu-item index="/user-pwd">
             <i class="el-icon-key"></i>重置密码
           </el-menu-item>
         </el-submenu>
@@ -42,7 +43,7 @@
           <span>欢迎 {{ nickname || username }}</span>
         </div>
         <el-menu
-          default-active="/home"
+          :default-active="$route.path"
           class="el-menu-vertical-demo"
           background-color="#23262e"
           text-color="#fff"
