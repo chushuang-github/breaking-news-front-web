@@ -68,12 +68,13 @@ export default {
           ...this.userForm
         }
         const { data: res } = await updateUserInfoAPI(data)
-        if (res.code !== 0) return this.$message.error('更新用户信息失败！')
-        this.$message.success('更新成功！')
+        if (res.code !== 0) return this.$message.error(res.message)
+        this.$message.success(res.message)
         this.$store.dispatch('initUserInfo')
       })
     },
     resetFn () {
+      // resetFields方法：可以重置表单，也可以重置表单的错误提示
       this.$refs.userFormRef.resetFields()
     }
   }
