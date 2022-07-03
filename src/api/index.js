@@ -40,7 +40,13 @@ export const getMenusAPI = () => {
 }
 
 // 基本资料 - 提交修改
-export const updateUserInfoAPI = ({ id, username, nickname, email, user_pic }) => {
+export const updateUserInfoAPI = ({
+  id,
+  username,
+  nickname,
+  email,
+  user_pic
+}) => {
   return request({
     url: '/my/userinfo',
     method: 'put',
@@ -74,6 +80,49 @@ export const updatePwdAPI = ({ old_pwd, new_pwd, re_pwd }) => {
       old_pwd,
       new_pwd,
       re_pwd
+    }
+  })
+}
+
+// 获取文章分类
+export const getArtCateListAPI = () => {
+  return request({
+    url: '/my/cate/list'
+  })
+}
+
+// 添加文章分类
+export const addArtCateAPI = ({ cate_name, cate_alias }) => {
+  return request({
+    url: '/my/cate/add',
+    method: 'post',
+    data: {
+      cate_name,
+      cate_alias
+    }
+  })
+}
+
+// 修改分类
+export const updateArtCateAPI = ({ id, cate_name, cate_alias }) => {
+  return request({
+    url: '/my/cate/info',
+    method: 'put',
+    data: {
+      id,
+      cate_name,
+      cate_alias
+    }
+  })
+}
+
+// 删除分类
+export const deleteArtCateAPI = (id) => {
+  return request({
+    url: '/my/cate/del',
+    method: 'delete',
+    params: {
+      id
     }
   })
 }
