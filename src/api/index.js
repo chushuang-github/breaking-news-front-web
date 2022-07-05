@@ -126,3 +126,14 @@ export const deleteArtCateAPI = (id) => {
     }
   })
 }
+
+// 文章发布/文章存为草稿
+export const uploadArticleAPI = (formData) => {
+  return request({
+    url: '/my/article/add',
+    method: 'post',
+    // 参数要的是表单对象，不能写普通对象
+    // axios内部会判断，如果是表单对象，传递的请求体会设置Content-Type为multipart/form-data
+    data: formData
+  })
+}

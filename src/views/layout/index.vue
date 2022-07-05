@@ -30,7 +30,7 @@
             <i class="el-icon-key"></i>重置密码
           </el-menu-item>
         </el-submenu>
-        <el-menu-item index="2" @click="logoutFn">
+        <el-menu-item @click="logoutFn">
           <i class="el-icon-switch-button"></i>退出
         </el-menu-item>
       </el-menu>
@@ -52,12 +52,12 @@
           unique-opened
           router
         >
-          <template v-for="item in menus">
+          <template v-for="(item, index) in menus">
             <el-menu-item v-if="!item.children" :index="item.indexPath" :key="item.indexPath">
               <i :class="item.icon"></i>
               <span slot="title">{{ item.title }}</span>
             </el-menu-item>
-            <el-submenu v-else :index="item.indexPath" :key="item.indexPath">
+            <el-submenu v-else :index="item.indexPath" :key="index">
               <template slot="title">
                 <i :class="item.icon"></i>
                 <span>{{ item.title }}</span>
