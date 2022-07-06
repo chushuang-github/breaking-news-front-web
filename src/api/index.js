@@ -137,3 +137,37 @@ export const uploadArticleAPI = (formData) => {
     data: formData
   })
 }
+
+// 获取文章列表
+export const getArticleListAPI = ({ pagenum, pagesize, cate_id, state }) => {
+  return request({
+    url: '/my/article/list',
+    params: {
+      pagenum,
+      pagesize,
+      cate_id,
+      state
+    }
+  })
+}
+
+// 获取文章详情
+export const getArticleDetailAPI = (id) => {
+  return request({
+    url: '/my/article/info',
+    params: {
+      id
+    }
+  })
+}
+
+// 删除文章
+export const deleteArticleAPI = (id) => {
+  return request({
+    url: '/my/article/info',
+    method: 'delete',
+    params: {
+      id
+    }
+  })
+}

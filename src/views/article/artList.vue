@@ -28,8 +28,8 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="small">筛选</el-button>
-            <el-button type="info" size="small">重置</el-button>
+            <el-button type="primary" size="small" @click="initArtListFn">筛选</el-button>
+            <el-button type="info" size="small" @click="resetListFn">重置</el-button>
           </el-form-item>
         </el-form>
         <!-- 发表文章的按钮 -->
@@ -44,8 +44,37 @@
       </div>
 
       <!-- 文章表格区域 -->
+      <el-table :data="artList" style="width: 100%;" border stripe>
+        <el-table-column label="文章标题" prop="title">
+          <template v-slot="scope">
+            <el-link type="primary" @click="showDetailFn(scope.row.id)">{{ scope.row.title }}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="分类" prop="cate_name"></el-table-column>
+        <el-table-column label="发表时间" prop="pub_date">
+          <template v-slot="scope">
+            <span>{{ scope.row.pub_date | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" prop="state"></el-table-column>
+        <el-table-column label="操作">
+          <template v-slot="{ row }">
+            <el-button type="danger" size="mini" @click="deleteFn(row.id)">删 除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <!-- 分页区域 -->
+      <el-pagination
+        @size-change="handleSizeChangeFn"
+        @current-change="handleCurrentChangeFn"
+        :current-page.sync="q.pagenum"
+        :page-size.sync="q.pagesize"
+        :page-sizes="[2, 3, 5, 10]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 发表文章的Dialog对话框 -->
@@ -96,11 +125,35 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 查看文章详情的对话框 -->
+    <el-dialog title="文章预览" :visible.sync="detailVisible" width="80%">
+      <h1 class="title">{{ artDetail.title }}</h1>
+      <div class="info">
+        <span>作者：{{ artDetail.nickname || artDetail.username }}</span>
+        <span>发布时间：{{ artDetail.pub_date | formatDate }}</span>
+        <span>所属分类：{{ artDetail.cate_name }}</span>
+        <span>状态：{{ artDetail.state }}</span>
+      </div>
+      <!-- 分割线 -->
+      <el-divider></el-divider>
+      <!-- 文章的封面 -->
+      <img v-if="artDetail.cover_img" :src="baseURL + artDetail.cover_img" alt="" />
+      <!-- 文章的详情 -->
+      <div v-html="artDetail.content" class="detail-box"></div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getArtCateListAPI, uploadArticleAPI } from '../../api'
+import {
+  getArtCateListAPI,
+  uploadArticleAPI,
+  getArticleListAPI,
+  getArticleDetailAPI,
+  deleteArticleAPI
+} from '../../api'
+import { baseURL } from '../../utils/request'
 import defaultImage from '../../assets/images/cover.jpg'
 export default {
   name: 'ArtList',
@@ -108,13 +161,18 @@ export default {
     return {
       // 查询参数对象
       q: {
-        pagenum: 1,
-        pagesize: 2,
+        pagenum: 1, // 默认拿第一页的数据
+        pagesize: 2, // 获取的数据条数
         cate_id: '',
         state: ''
       },
       pubDialogVisible: false,
       cateList: [], // 文章分类
+      artList: [], // 文章的列表数据
+      total: 0, // 总数据条数
+      artDetail: {}, // 文章详情
+      detailVisible: false, // 文章详情对话框
+      baseURL: baseURL,
       pubForm: {
         // 表单的数据对象
         title: '',
@@ -143,6 +201,7 @@ export default {
   },
   created () {
     this.getArtCateList()
+    this.getArticleList()
   },
   methods: {
     // 富文本编辑器内容改变了，触发此事件方法
@@ -153,6 +212,12 @@ export default {
     async getArtCateList () {
       const { data: res } = await getArtCateListAPI()
       this.cateList = res.data
+    },
+    // 获取文章列表
+    async getArticleList () {
+      const { data: res } = await getArticleListAPI(this.q)
+      this.artList = res.data
+      this.total = res.total
     },
     // 发表文章按钮的点击事件
     showPubDialogFn () {
@@ -201,6 +266,7 @@ export default {
         this.$message.success(res.message)
         // 关闭对话框
         this.pubDialogVisible = false
+        this.getArticleList()
       })
     },
     // 关闭对话框
@@ -210,6 +276,52 @@ export default {
       // 文章图片重置
       this.$refs.imgRef.setAttribute('src', defaultImage)
       this.pubForm.cover_img = null
+    },
+    // 分页大小发生变化
+    handleSizeChangeFn (pagesize) {
+      this.q.pagesize = pagesize
+      this.q.pagenum = 1
+      this.getArticleList()
+    },
+    // 分页当前页数发生变化
+    handleCurrentChangeFn (pagenum) {
+      this.q.pagenum = pagenum
+      this.getArticleList()
+    },
+    // 筛选功能实现
+    initArtListFn () {
+      this.q.pagenum = 1
+      this.q.pagesize = 2
+      this.getArticleList()
+    },
+    // 重置功能实现
+    resetListFn () {
+      this.q.pagenum = 1
+      this.q.pagesize = 2
+      this.q.cate_id = ''
+      this.q.state = ''
+      this.getArticleList()
+    },
+    async showDetailFn (id) {
+      const { data: res } = await getArticleDetailAPI(id)
+      this.artDetail = res.data
+      this.detailVisible = true
+    },
+    // 删除按钮
+    async deleteFn (id) {
+      const confirmResult = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult === 'cancel') return false
+      const { data: res } = await deleteArticleAPI(id)
+      if (res.code !== 0) return this.$message.error(res.message)
+      this.$message.success(res.message)
+      if (this.artList.length === 1 && this.q.pagenum > 1) {
+        this.q.pagenum--
+      }
+      this.getArticleList()
     }
   }
 }
@@ -233,5 +345,31 @@ export default {
   width: 400px;
   height: 280px;
   object-fit: cover;
+}
+// 分页器
+.el-pagination {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+// 文章详情
+.title {
+  font-size: 24px;
+  text-align: center;
+  font-weight: normal;
+  color: #000;
+  margin: 0 0 10px 0;
+}
+.info {
+  font-size: 12px;
+  span {
+    margin-right: 20px;
+  }
+}
+// 修改 dialog 内部元素的样式，需要添加样式穿透
+::v-deep .detail-box {
+  img {
+    width: 500px;
+  }
 }
 </style>
